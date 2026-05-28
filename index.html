@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>BookFlow | 北區贈書單管理系統</title>
+  
+  <!-- SEO & Meta Tags -->
+  <meta name="description" content="BookFlow 是一個高質感的北區贈書單管理系統，支援多步驟智能表單申請與實時數據可視化。">
+  <meta name="author" content="BookFlow Team">
+  
+  <!-- PWA Meta Tags -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#06050a">
+  
+  <!-- Apple PWA (iOS) Meta Tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="BookFlow">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  
+  <!-- CSS Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+  
+  <!-- FontAwesome Icons for modern aesthetic -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- ==================== SIDEBAR ==================== -->
+    <aside class="sidebar">
+      <div class="brand-section">
+        <div class="brand-logo">
+          <i class="fa-solid fa-graduation-cap"></i>
+        </div>
+        <span class="brand-name">BookFlow</span>
+      </div>
+      
+      <nav class="nav-menu">
+        <a class="nav-item active" data-view="dashboard">
+          <i class="fa-solid fa-chart-line"></i>
+          <span>管理儀表板</span>
+        </a>
+        <a class="nav-item" id="sidebar-add-school-teacher" style="cursor: pointer;">
+          <i class="fa-solid fa-circle-plus" style="color: var(--color-cyan);"></i>
+          <span>新增學校與老師</span>
+        </a>
+        <a class="nav-item" data-view="wizard">
+          <i class="fa-solid fa-file-signature"></i>
+          <span>申請贈書單</span>
+        </a>
+      </nav>
+      
+      <div class="sidebar-footer">
+        <p>BookFlow v1.0.0</p>
+        <p>© 2026 北區贈書管理</p>
+      </div>
+    </aside>
+    
+    <!-- ==================== MAIN CONTENT ==================== -->
+    <main class="main-content">
+      
+      <!-- TOP HEADER -->
+      <header class="top-header">
+        <div class="header-title">
+          <h1 id="view-title">贈書管理儀表板</h1>
+          <p id="view-subtitle">實時追蹤贈書申請進度與教材分發統計</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn-secondary" id="btn-quick-reset" style="border-color: rgba(255, 80, 80, 0.25); color: #ff6b6b; background: rgba(255, 50, 50, 0.03);">
+            <i class="fa-solid fa-rotate-left"></i>
+            <span>重設數據</span>
+          </button>
+          <button class="btn-secondary" id="btn-quick-export">
+            <i class="fa-solid fa-download"></i>
+            <span>匯出 CSV</span>
+          </button>
+          <button class="btn-primary" id="btn-quick-new">
+            <i class="fa-solid fa-plus"></i>
+            <span>新增申請</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- ==================== VIEW: DASHBOARD ==================== -->
+      <section class="view-panel active" id="view-dashboard">
+        
+        <!-- METRICS CARDS -->
+        <div class="metrics-grid">
+          
+          <div class="metric-card cyan">
+            <div class="metric-header">
+              <span class="metric-title">總申請件數</span>
+              <div class="metric-icon"><i class="fa-solid fa-file-invoice"></i></div>
+            </div>
+            <div class="metric-value" id="metric-total-requests">0</div>
+            <div class="metric-change up">
+              <i class="fa-solid fa-arrow-trend-up"></i>
+              <span>穩定成長中</span>
+            </div>
+          </div>
+          
+          <div class="metric-card violet">
+            <div class="metric-header">
+              <span class="metric-title">急件比例</span>
+              <div class="metric-icon"><i class="fa-solid fa-bolt"></i></div>
+            </div>
+            <div class="metric-value" id="metric-urgent-pct">0%</div>
+            <div class="metric-change up">
+              <i class="fa-solid fa-circle-exclamation"></i>
+              <span id="metric-urgent-count">0 件急需處理</span>
+            </div>
+          </div>
+          
+          <div class="metric-card green">
+            <div class="metric-header">
+              <span class="metric-title">申請圖書總數</span>
+              <div class="metric-icon"><i class="fa-solid fa-book"></i></div>
+            </div>
+            <div class="metric-value" id="metric-total-books">0</div>
+            <div class="metric-change up">
+              <i class="fa-solid fa-circle-check"></i>
+              <span>已分配完成</span>
+            </div>
+          </div>
+          
+          <div class="metric-card orange">
+            <div class="metric-header">
+              <span class="metric-title">覆蓋學校數</span>
+              <div class="metric-icon"><i class="fa-solid fa-school"></i></div>
+            </div>
+            <div class="metric-value" id="metric-total-schools">0</div>
+            <div class="metric-change neutral">
+              <i class="fa-solid fa-location-dot"></i>
+              <span>北區教育機構</span>
+            </div>
+          </div>
+          
+        </div>
+        
+        <!-- FILTER BAR -->
+        <div class="filter-bar">
+          <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="search-input" placeholder="搜尋教師、學校名稱...">
+          </div>
+          
+          <div class="filter-options">
+            <div class="select-wrapper">
+              <select id="filter-subject">
+                <option value="all">所有科目</option>
+                <option value="國">國文</option>
+                <option value="英">英文</option>
+                <option value="數">數學</option>
+                <option value="物">物理</option>
+                <option value="化">化學</option>
+                <option value="歷">歷史</option>
+              </select>
+            </div>
+            
+            <div class="select-wrapper">
+              <select id="filter-delivery">
+                <option value="all">所有寄送方式</option>
+                <option value="郵寄">郵寄</option>
+                <option value="親送">親送</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <!-- DATA TABLE -->
+        <div class="table-container">
+          <table class="responsive-table" id="requests-table">
+            <thead>
+              <tr>
+                <th>學校名稱</th>
+                <th>教師姓名</th>
+                <th>科目</th>
+                <th>寄送方式</th>
+                <th>急件</th>
+                <th>用途備註</th>
+                <th>申請書號與本數</th>
+                <th style="text-align: center;">操作</th>
+              </tr>
+            </thead>
+            <tbody id="table-body">
+              <!-- JS dynamically populates this -->
+            </tbody>
+          </table>
+        </div>
+        
+      </section>
+
+      <!-- ==================== VIEW: WIZARD FORM ==================== -->
+      <section class="view-panel" id="view-wizard">
+        
+        <div class="wizard-card">
+          
+          <!-- PROGRESS INDICATOR HEADER -->
+          <div class="wizard-steps-header">
+            <div class="step-indicator active" id="indicator-1">
+              <span class="step-number">1</span>
+              <span>基本資訊</span>
+            </div>
+            <div class="step-line" id="line-1"></div>
+            
+            <div class="step-indicator" id="indicator-2">
+              <span class="step-number">2</span>
+              <span>選取書籍</span>
+            </div>
+            <div class="step-line" id="line-2"></div>
+            
+            <div class="step-indicator" id="indicator-3">
+              <span class="step-number">3</span>
+              <span>寄送備註</span>
+            </div>
+            <div class="step-line" id="line-3"></div>
+            
+            <div class="step-indicator" id="indicator-4">
+              <span class="step-number">4</span>
+              <span>資料確認</span>
+            </div>
+          </div>
+          
+          <!-- FORM CONTAINER -->
+          <div class="wizard-form-body">
+            
+            <!-- STEP 1: GENERAL INFO -->
+            <div class="form-step active" data-step="1">
+              <div class="form-group">
+                <label class="form-label" for="form-school">學校名稱 <span style="color: var(--color-violet)">*</span></label>
+                <div class="select-wrapper" style="width: 100%;">
+                  <select id="form-school" class="form-control" required style="appearance: none; -webkit-appearance: none; cursor: pointer;">
+                    <option value="">請選擇學校...</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="form-subject">申請科目 <span style="color: var(--color-violet)">*</span></label>
+                <div class="select-wrapper" style="width: 100%;">
+                  <select id="form-subject" class="form-control" required style="appearance: none; -webkit-appearance: none; cursor: pointer;">
+                    <option value="">請選擇科目...</option>
+                    <option value="國">國文</option>
+                    <option value="英">英文</option>
+                    <option value="數">數學</option>
+                    <option value="物">物理</option>
+                    <option value="化">化學</option>
+                    <option value="生">生物</option>
+                    <option value="科">地球科學</option>
+                    <option value="歷">歷史</option>
+                    <option value="地">地理</option>
+                    <option value="公">公民</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label" for="form-teacher">教師/申請人姓名 <span style="color: var(--color-violet)">*</span></label>
+                <div class="select-wrapper" style="width: 100%;">
+                  <select id="form-teacher" class="form-control" required style="appearance: none; -webkit-appearance: none; cursor: pointer;">
+                    <option value="">請選擇教師...</option>
+                  </select>
+                </div>
+              </div>
+
+
+              <div class="form-group">
+                <label class="form-label" for="form-teacher-id">教師編號 (選填)</label>
+                <input type="text" id="form-form-teacher-id" class="form-control" placeholder="請輸入教師編號 (若無可留空)">
+              </div>
+            </div>
+            
+            <!-- STEP 2: BOOKS QUANTITY SELECTION -->
+            <div class="form-step" data-step="2">
+              <!-- DYNAMIC BOOKS LIST STEPPER -->
+              <div class="form-group" id="books-stepper-section" style="display: block;">
+                <label class="form-label">選取書籍與本數</label>
+                <p class="form-help-text">請利用下方加減按鈕調整申請本數：</p>
+                <div class="books-stepper-container" id="books-stepper-list">
+                  <!-- JS builds book steppers here -->
+                </div>
+              </div>
+            </div>
+            
+            <!-- STEP 3: DELIVERY & REMARKS -->
+            <div class="form-step" data-step="3">
+              <div class="form-group">
+                <label class="form-label">寄送方式 <span style="color: var(--color-violet)">*</span></label>
+                <div class="options-grid">
+                  <div class="option-card selected" data-radio-group="delivery" data-value="郵寄">
+                    <input type="radio" name="wizard-delivery" value="郵寄" checked>
+                    <i class="fa-solid fa-truck-fast"></i>
+                    <span>郵寄物流</span>
+                  </div>
+                  <div class="option-card" data-radio-group="delivery" data-value="親送">
+                    <input type="radio" name="wizard-delivery" value="親送">
+                    <i class="fa-solid fa-person-walking-luggage"></i>
+                    <span>人員親送</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">急件屬性 <span style="color: var(--color-violet)">*</span></label>
+                <div class="options-grid">
+                  <div class="option-card" data-radio-group="urgency" data-value="急件">
+                    <input type="radio" name="wizard-urgency" value="急件">
+                    <i class="fa-solid fa-bolt"></i>
+                    <span>急件 (儘速出貨)</span>
+                  </div>
+                  <div class="option-card selected" data-radio-group="urgency" data-value="普通">
+                    <input type="radio" name="wizard-urgency" value="普通" checked>
+                    <i class="fa-solid fa-calendar-check"></i>
+                    <span>普通 (一般件)</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">書籍用途備註 (可複選) <span style="color: var(--color-violet)">*</span></label>
+                <div class="options-grid">
+                  <div class="option-card" data-checkbox-value="用書校">
+                    <input type="checkbox" name="wizard-remarks" value="用書校">
+                    <i class="fa-solid fa-book-bookmark"></i>
+                    <span>用書校</span>
+                  </div>
+                  <div class="option-card" data-checkbox-value="缺書保留">
+                    <input type="checkbox" name="wizard-remarks" value="缺書保留">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    <span>缺書保留</span>
+                  </div>
+                  <div class="option-card" data-checkbox-value="推廣選書用">
+                    <input type="checkbox" name="wizard-remarks" value="推廣選書用">
+                    <i class="fa-solid fa-rectangle-ad"></i>
+                    <span>推廣選書用</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- STEP 4: SUMMARY INVOICE -->
+            <div class="form-step" data-step="4">
+              <div class="summary-invoice">
+                <div class="summary-header">
+                  <h3>申請資料明細確認</h3>
+                  <span class="badge badge-subject" id="summary-badge-subject">數學</span>
+                </div>
+                
+                <div class="summary-grid">
+                  <div class="summary-item">
+                    <span class="summary-label">學校名稱</span>
+                    <span class="summary-val" id="summary-school">-</span>
+                  </div>
+                  
+                  <div class="summary-item">
+                    <span class="summary-label">教師/申請人</span>
+                    <span class="summary-val" id="summary-teacher">-</span>
+                  </div>
+                  
+                  <div class="summary-item">
+                    <span class="summary-label">寄送物流</span>
+                    <span class="summary-val" id="summary-delivery">-</span>
+                  </div>
+                  
+                  <div class="summary-item">
+                    <span class="summary-label">案件優先級</span>
+                    <span class="summary-val" id="summary-urgency">-</span>
+                  </div>
+                  
+                  <div class="summary-item" style="grid-column: span 2;">
+                    <span class="summary-label">用途備註</span>
+                    <span class="summary-val" id="summary-remarks">-</span>
+                  </div>
+                </div>
+                
+                <div class="summary-books-section">
+                  <span class="summary-books-title">已選書籍明細</span>
+                  <div id="summary-books-list">
+                    <!-- Dynamic Summary Rows -->
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+          </div>
+          
+          <!-- NAVIGATION BUTTONS FOOTER -->
+          <footer class="wizard-footer">
+            <button class="btn-secondary" id="btn-prev" style="visibility: hidden;">
+              <i class="fa-solid fa-arrow-left"></i>
+              <span>上一步</span>
+            </button>
+            <button class="btn-primary" id="btn-next">
+              <span>下一步</span>
+              <i class="fa-solid fa-arrow-right" id="next-icon"></i>
+            </button>
+          </footer>
+          
+        </div>
+        
+      </section>
+      
+    </main>
+  </div>
+
+  <!-- ==================== MODAL OVERLAY (SUCCESS) ==================== -->
+  <div class="modal-overlay" id="success-modal">
+    <div class="modal-card">
+      <div class="modal-body">
+        <div class="modal-icon"><i class="fa-solid fa-check"></i></div>
+        <h2>申請成功提交！</h2>
+        <p>您的北區贈書單資料已成功記錄，並且儀表板數據已實時更新。</p>
+        <button class="btn-primary" id="btn-close-success" style="margin: 0 auto;">
+          <span>返回儀表板</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL OVERLAY (DETAIL VIEW) ==================== -->
+  <div class="modal-overlay" id="detail-modal">
+    <div class="modal-card" style="max-width: 600px;">
+      <div class="modal-body" style="text-align: left;">
+        <h2 style="margin-bottom: 24px; font-family: var(--font-heading); font-size: 22px; display: flex; justify-content: space-between; align-items: center;">
+          <span>申請單詳細資料</span>
+          <span class="badge badge-urgent" id="modal-detail-urgency" style="font-size: 11px;">急件</span>
+        </h2>
+        
+        <div class="summary-invoice" style="background: rgba(255,255,255,0.01);">
+          <div class="summary-grid" style="margin-bottom: 0;">
+            <div class="summary-item">
+              <span class="summary-label">學校名稱</span>
+              <span class="summary-val" id="modal-detail-school">-</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">教師姓名</span>
+              <span class="summary-val" id="modal-detail-teacher">-</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">學科</span>
+              <span class="summary-val" id="modal-detail-subject">-</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">寄送方式</span>
+              <span class="summary-val" id="modal-detail-delivery">-</span>
+            </div>
+            <div class="summary-item" style="grid-column: span 2;">
+              <span class="summary-label">用途說明</span>
+              <span class="summary-val" id="modal-detail-remarks">-</span>
+            </div>
+          </div>
+          
+          <div class="summary-books-section" style="margin-top: 20px;">
+            <span class="summary-books-title">申請書籍清單</span>
+            <div id="modal-detail-books-list">
+              <!-- Dynamic Rows -->
+            </div>
+          </div>
+        </div>
+        
+        <div style="margin-top: 32px; display: flex; justify-content: flex-end;">
+          <button class="btn-secondary" id="btn-close-detail">
+            <span>關閉</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL OVERLAY (ADD SCHOOL & TEACHER) ==================== -->
+  <div class="modal-overlay" id="add-school-teacher-modal">
+    <div class="modal-card" style="max-width: 450px;">
+      <div class="modal-body" style="text-align: left;">
+        <h2 style="margin-bottom: 24px; font-family: var(--font-heading); font-size: 20px; color: var(--color-cyan); display: flex; align-items: center; gap: 8px;">
+          <i class="fa-solid fa-circle-plus"></i>
+          <span>新增學校與教師資料</span>
+        </h2>
+        
+        <div class="form-group" style="margin-bottom: 20px;">
+          <label class="form-label" for="modal-add-school">學校名稱 <span style="color: var(--color-violet)">*</span></label>
+          <input type="text" id="modal-add-school" class="form-control" placeholder="例如：大直高中、明德高中" required>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 20px;">
+          <label class="form-label" for="modal-add-subject">科目 <span style="color: var(--color-violet)">*</span></label>
+          <select id="modal-add-subject" class="form-control" required style="appearance: none; -webkit-appearance: none; cursor: pointer;">
+            <option value="">請選擇科目...</option>
+            <option value="國文">國文</option>
+            <option value="英文">英文</option>
+            <option value="數學">數學</option>
+            <option value="物理">物理</option>
+            <option value="化學">化學</option>
+            <option value="生物">生物</option>
+            <option value="地球科學">地球科學</option>
+            <option value="歷史">歷史</option>
+            <option value="地理">地理</option>
+            <option value="公民">公民</option>
+          </select>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 20px;">
+          <label class="form-label" for="modal-add-teacher">教師姓名 <span style="color: var(--color-violet)">*</span></label>
+          <input type="text" id="modal-add-teacher" class="form-control" placeholder="例如：張老師、李老師" required>
+        </div>
+        
+        <div style="margin-top: 32px; display: flex; justify-content: flex-end; gap: 12px;">
+          <button class="btn-secondary" id="btn-close-add-school-teacher" style="height: 42px;">
+            <span>取消</span>
+          </button>
+          <button class="btn-primary" id="btn-submit-add-school-teacher" style="height: 42px; box-shadow: var(--shadow-neon-cyan);">
+            <span>確認新增</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== TOAST NOTIFICATION CONTAINER ==================== -->
+  <div class="toast-container" id="toast-container">
+    <!-- Toasts pushed programmatically -->
+  </div>
+
+  <!-- Web Application Scripts -->
+  <script src="app.js"></script>
+
+  <!-- Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js')
+          .then(reg => console.log('SW registered:', reg.scope))
+          .catch(err => console.log('SW registration failed:', err));
+      });
+    }
+  </script>
+
+  <!-- Mobile Bottom Navigation (visible only on small screens) -->
+  <nav class="mobile-bottom-nav" id="mobile-bottom-nav">
+    <a class="mobile-nav-btn active" data-view="dashboard">
+      <i class="fa-solid fa-chart-line"></i>
+      <span>儀表板</span>
+    </a>
+    <a class="mobile-nav-btn" id="mobile-add-school-teacher">
+      <i class="fa-solid fa-circle-plus"></i>
+      <span>新增資料</span>
+    </a>
+    <a class="mobile-nav-btn" data-view="wizard">
+      <i class="fa-solid fa-file-circle-plus"></i>
+      <span>申請贈書</span>
+    </a>
+  </nav>
+
+</body>
+</html>

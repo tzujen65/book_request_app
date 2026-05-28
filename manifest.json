@@ -1,0 +1,24 @@
+{
+  "name": "BookFlow 北區贈書單管理系統",
+  "short_name": "BookFlow",
+  "description": "高質感的北區贈書單管理系統，支援多步驟智能表單申請與實時數據可視化。",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#06050a",
+  "theme_color": "#06050a",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
