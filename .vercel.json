@@ -1,0 +1,23 @@
+{
+  "outputDirectory": "dist",
+  "framework": "none",
+  "buildCommand": "npm run build",
+  "installCommand": "npm install",
+  "rewrites": [
+    {
+      "source": "/*",
+      "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/assets/*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, s-maxage=604800, immutable"
+        }
+      ]
+    }
+  ]
+}

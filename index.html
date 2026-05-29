@@ -488,16 +488,16 @@
           <label class="form-label" for="modal-add-subject">科目 <span style="color: var(--color-violet)">*</span></label>
           <select id="modal-add-subject" class="form-control" required style="appearance: none; -webkit-appearance: none; cursor: pointer;">
             <option value="">請選擇科目...</option>
-            <option value="國文">國文</option>
-            <option value="英文">英文</option>
-            <option value="數學">數學</option>
-            <option value="物理">物理</option>
-            <option value="化學">化學</option>
-            <option value="生物">生物</option>
-            <option value="地球科學">地球科學</option>
-            <option value="歷史">歷史</option>
-            <option value="地理">地理</option>
-            <option value="公民">公民</option>
+            <option value="國">國文</option>
+            <option value="英">英文</option>
+            <option value="數">數學</option>
+            <option value="物">物理</option>
+            <option value="化">化學</option>
+            <option value="生">生物</option>
+            <option value="科">地球科學</option>
+            <option value="歷">歷史</option>
+            <option value="地">地理</option>
+            <option value="公">公民</option>
           </select>
         </div>
 
@@ -552,6 +552,51 @@
       <span>申請贈書</span>
     </a>
   </nav>
+
+  <!-- ==================== INTERACTIVE TEST RUNNER PANEL ==================== -->
+  <button class="btn-test-trigger" id="btn-test-trigger" title="啟動系統功能測試">
+    <i class="fa-solid fa-flask-vial"></i>
+    <span>測試系統</span>
+  </button>
+
+  <div class="test-runner-panel" id="test-runner-panel">
+    <div class="test-runner-header">
+      <div class="test-runner-title-area">
+        <i class="fa-solid fa-microchip"></i>
+        <div>
+          <h3>BookFlow 測試套件</h3>
+          <p>實時模擬與自動化功能檢測</p>
+        </div>
+      </div>
+      <button class="test-runner-close" id="btn-test-close">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    
+    <div class="test-runner-controls">
+      <button class="btn-primary" id="btn-run-tests" style="width: 100%; box-shadow: var(--shadow-neon-cyan);">
+        <i class="fa-solid fa-play"></i>
+        <span>開始自動化測試</span>
+      </button>
+    </div>
+
+    <div class="test-progress-section" id="test-progress-section" style="display: none;">
+      <div class="test-progress-labels">
+        <span>測試進度</span>
+        <span id="test-progress-pct">0%</span>
+      </div>
+      <div class="test-progress-bar-container">
+        <div class="test-progress-bar" id="test-progress-bar"></div>
+      </div>
+    </div>
+
+    <div class="test-logs-container" id="test-logs-container">
+      <div class="test-log-welcome">
+        <i class="fa-solid fa-circle-info"></i>
+        <p>點擊上方按鈕開始執行自動化整合測試。測試將會模擬真實點擊，您可以同步看見畫面的自動運作。</p>
+      </div>
+    </div>
+  </div>
 
 </body>
 </html>
